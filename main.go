@@ -11,11 +11,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 
 	"wishlist/internal/api"
 )
 
 func main() {
+	// .env is optional: real environments can set these vars directly instead.
+	_ = godotenv.Load()
+
 	dsn := os.Getenv("WISHLIST_DB_DSN")
 	if dsn == "" {
 		log.Fatal("WISHLIST_DB_DSN env var is required")
