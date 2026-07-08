@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 CREATE TABLE bonds (
     isin VARCHAR(12) NOT NULL,
     bond_name TEXT NOT NULL,
@@ -11,6 +13,9 @@ CREATE TABLE bonds (
     maturity_date DATE,
     PRIMARY KEY (isin)
 );
+
+-- Enables typo-tolerant fuzzy search on bond_name via trigram similarity.
+CREATE INDEX idx_bonds_name_trgm ON bonds USING gin (bond_name gin_trgm_ops);
 
 CREATE TABLE wishlists (
     id UUID NOT NULL,
