@@ -48,3 +48,5 @@ delete bond in wishlist
 DELETE http://localhost:8080/wishlists/:wishlistId/items/:bondId
 
 
+search 
+http://localhost:8080/bonds?

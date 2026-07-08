@@ -5,11 +5,17 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
+
+// maxWishlistNameLength caps wishlist names at 30 characters (well under the
+// wishlists.name VARCHAR(50) column), rejected with a clean 400 here instead
+// of a raw DB error.
+const maxWishlistNameLength = 30
 
 var wishlistConstraintMessages = map[string]string{
 	"idx_wishlists_name_lower": "wishlist name already exists",
@@ -23,7 +29,11 @@ func (h *Handler) CreateWishlist(c *gin.Context) {
 	}
 	name := strings.TrimSpace(req.Name)
 	if name == "" {
-		writeError(c, http.StatusBadRequest, "name is required")
+		writeError(c, http.StatusBadRequest, "invalid name: must not be empty")
+		return
+	}
+	if utf8.RuneCountInString(name) > maxWishlistNameLength {
+		writeError(c, http.StatusBadRequest, "invalid name: must be 30 characters or fewer")
 		return
 	}
 
@@ -177,7 +187,11 @@ func (h *Handler) RenameWishlist(c *gin.Context) {
 	}
 	name := strings.TrimSpace(req.Name)
 	if name == "" {
-		writeError(c, http.StatusBadRequest, "name is required")
+		writeError(c, http.StatusBadRequest, "invalid name: must not be empty")
+		return
+	}
+	if utf8.RuneCountInString(name) > maxWishlistNameLength {
+		writeError(c, http.StatusBadRequest, "invalid name: must be 30 characters or fewer")
 		return
 	}
 
