@@ -9,6 +9,57 @@ A backend service for managing bond wishlists — create wishlists, add/remove/r
 - **pg_trgm** — Postgres extension for typo-tolerant fuzzy bond-name search
 - **godotenv** — loads `.env` for local development
 
+
+## API endpoints
+
+**create wishlist**
+POST /wishlists
+body-
+{
+  "name": "w1"
+}
+
+**add bond**
+POST /wishlists/:wishlistId/items
+body-
+{
+  "bondId": "IN0020230036",
+  "color": "#FF0000", (optional)
+  "isPinned": true, (optional)
+  "position": 5 (optional)
+}
+
+**get all wishlists**
+GET /wishlists
+
+**get all bonds in a wishlists**
+GET /wishlists/:wishlistId
+
+**get all the bonds**
+GET 8080/bonds
+
+
+**change name**
+PUT /wishlists/:wishlistId
+{
+  "name": "Renamed Wishlist"
+}
+
+**update** 
+
+PATCH /wishlists/:wishlistId>/items/:bondId
+{
+  "isPinned": true,
+  "color": "#00FF00"
+}
+
+**delete wishlist**
+DELETE /wishlists/:wishlistId
+
+
+**delete bond in wishlist**
+DELETE /wishlists/:wishlistId/items/:bondId
+
 ## Project structure
 
 ```
