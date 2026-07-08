@@ -1,0 +1,262 @@
+{
+  "info": {
+    "name": "Wishlist API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "wishlistId", "value": "" },
+    { "key": "bondId", "value": "IN0020230036" },
+    { "key": "bondId2", "value": "INE00XL07015" },
+    { "key": "fakeUuid", "value": "00000000-0000-0000-0000-000000000000" }
+  ],
+  "item": [
+    {
+      "name": "Wishlists",
+      "item": [
+        {
+          "name": "Create Wishlist",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Wishlist\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/wishlists", "host": ["{{baseUrl}}"], "path": ["wishlists"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('wishlistId', body.id);",
+                  "    console.log('Saved wishlistId =', body.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Wishlists",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/wishlists", "host": ["{{baseUrl}}"], "path": ["wishlists"] }
+          }
+        },
+        {
+          "name": "Get Wishlist Detail",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}"]
+            }
+          }
+        },
+        {
+          "name": "Rename Wishlist",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Renamed Wishlist\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Wishlist",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Items",
+      "item": [
+        {
+          "name": "Add Bond to Wishlist (defaults)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bondId\": \"{{bondId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}", "items"]
+            }
+          }
+        },
+        {
+          "name": "Add Bond to Wishlist (color/pin/position)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bondId\": \"{{bondId2}}\",\n  \"color\": \"#FF0000\",\n  \"isPinned\": true,\n  \"position\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}", "items"]
+            }
+          }
+        },
+        {
+          "name": "Update Item (pin/color/position)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isPinned\": true,\n  \"color\": \"#00FF00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}/items/{{bondId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}", "items", "{{bondId}}"]
+            }
+          }
+        },
+        {
+          "name": "Remove Bond from Wishlist",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}/items/{{bondId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}", "items", "{{bondId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Cases",
+      "item": [
+        {
+          "name": "Get Wishlist - Not Found (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{fakeUuid}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{fakeUuid}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Wishlist - Invalid UUID (400)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/not-a-uuid",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "not-a-uuid"]
+            }
+          }
+        },
+        {
+          "name": "Add Item - Wishlist Not Found (404)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bondId\": \"{{bondId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{fakeUuid}}/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{fakeUuid}}", "items"]
+            }
+          }
+        },
+        {
+          "name": "Add Item - Duplicate Bond (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bondId\": \"{{bondId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}", "items"]
+            }
+          }
+        },
+        {
+          "name": "Add Item - Bond Not Found (404)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bondId\": \"ZZINVALID000\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}", "items"]
+            }
+          }
+        },
+        {
+          "name": "Update Item - Empty Body (400)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}/items/{{bondId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}", "items", "{{bondId}}"]
+            }
+          }
+        },
+        {
+          "name": "Rename Wishlist - Empty Name (400)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"   \"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wishlists/{{wishlistId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["wishlists", "{{wishlistId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
